@@ -1,0 +1,21 @@
+{
+  "name": "s-agg",
+  "version": "0.0.1",
+  "description": "My part from Social aggregator project",
+  "main": "app.js",
+  "scripts": {
+    "prestart": "echo Running node",
+    "start": "node app.js",
+    "test": "echo Need to implement testing..."
+  },
+  "author": "Project shattle-1 team",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "mongoose": "^4.5.9",
+    "morgan": "^1.7.0",
+    "request": "^2.74.0"
+  }
+}
