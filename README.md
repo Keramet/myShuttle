@@ -1,0 +1,1 @@
+#### My part from web-app "Social aggregator" in  JavaScript Project Shuttle #1
