@@ -14,7 +14,7 @@ const errHandler = require('./errors/error-handling')
 
 // Environment variables
 const PORT   = require('./config').port
-    , app    = express();
+    , app    = express()
     , server = http.createServer(app)
     ;
 
@@ -33,6 +33,18 @@ db.once('open', () => {
 
     console.log(`Opening DB  mongodb://${host}:${port}/${dbname}.........[ OK ]`);
 }); 
+
+app.get('/', (req, res, next) => {
+    res.send(`<p>
+                 This is a part of web-app <b>Social Aggregator</b>.
+                 You can get some information from Facebook, using its API.
+              </p>
+              <p>
+                 First of all, you need user authorization in FB to get acceess_token from FB.<br>
+                 <a href='/fb'>Get access token</a>
+              </p>`
+    );
+});
 
 app.use('/fb', fbRoute);
 app.use('/e', errRoute); 

@@ -7,9 +7,9 @@ const  express  = require('express')
     ,  Friend   = require('../models/fb_friend')
     ;
 
-const FB_CONF = require('./fb_auth_config');     // данные приложения 
+const FB_CONF = require('./fb_auth_config');    // FB-app data 
 
-const FIELDS  = {
+const FIELDS  = {                               // which information we want to get
     post   : 'name,message,created_time,full_picture,story',
     friend : 'gender,name,picture'
 }
@@ -20,7 +20,7 @@ router.get( '/', (req, res, next) => {
          loginUrl = 'https://www.facebook.com/dialog/oauth?'
                   + `client_id=${FB_CONF.clientID}`
                   + `&redirect_uri=${FB_CONF.redirect}`
-                  + '&scope=public_profile,user_posts,user_friends' // ,taggable_friends
+                  + '&scope=public_profile,user_posts,user_friends' 
                   + '&display=popup&response_type=code',
 
         changeUrl = 'https://graph.facebook.com/v2.7/oauth/access_token?'
@@ -29,7 +29,7 @@ router.get( '/', (req, res, next) => {
                   + `&client_secret=${FB_CONF.clientSecret}`
                   + '&code=';
 
-    if ( token ) {                      // токен есть - можно получать инфу
+    if ( token ) {                      // we have got the TOKEN,  now we able to get info
         return res.send(`<p>Your FB token: <b>${token}</b></p>
                          <p>Now you can get any information using this <b>token</b>. For example, get your:
                             <ul>
@@ -39,7 +39,7 @@ router.get( '/', (req, res, next) => {
                          </p>`);
     }
 
-    if ( req.query.code ) {             // код получен, можно обменять его на токен  
+    if ( req.query.code ) {             // we have got the CODE,  now we need to change it for a TOKEN  
         changeUrl += req.query.code;
 
         requestPromise(changeUrl)
@@ -49,14 +49,14 @@ router.get( '/', (req, res, next) => {
             })
             .catch( err => next(err) ); 
 
-    } else if ( req.query.error ) {     // пользователь не дал согласие
+    } else if ( req.query.error ) {     // user denied our app
         let message = req.query.error + ': '
                     + req.query.error_description + ' - '
                     + req.query.error_reason;
 
         next( new ErrorAPI(message, 401) ); 
 
-    } else {                            // запрашиваем код
+    } else {                            // requiring a CODE
         res.redirect( loginUrl );
     }
 });
@@ -85,7 +85,7 @@ let feedOpts = {
 // router.get( '/feed_posts', routeFunc('feed', feedOpts, FB.savaAllPosts) );  
 router.get( '/feed_posts', routeFunc('feed', feedOpts, Post.savaAllPosts) );  
 
-// let since = 1471765515;  // вытягивать из БД
+
 router.get( '/feed_posts/refresh',
     Post.getLRDate,
     getReqUrl('feed', FIELDS.post),
@@ -121,7 +121,7 @@ router.get( '/search/:q/:limit',  (req, res, next) => {
         url    = `https://graph.facebook.com/search?access_token=${token}&q=${q}&type=user&limit=${limit}`;
 
     if ( !token )  {
-        return res.redirect('/fb');  // пользователь не авторизирован в ФБ
+        return res.redirect('/fb');         // user is not authorized in FB
     }
 
     requestPromise( url )
@@ -212,7 +212,7 @@ function requestPromise(url) {
             if (err) {
                 rej( new ErrorAPI(err.message, 400) );
             } else {
-                response.statusCode === 200         // разобраться с типами в res и rej
+                response.statusCode === 200         
                     ? res( JSON.parse(body) )
                     : rej( new ErrorAPI( JSON.parse(body).error.message, response.statusCode ) );
             }
@@ -247,7 +247,7 @@ function getReqUrl (endPoint, options) {
             reqUrl = `https://graph.facebook.com/me/${endPoint}?access_token=${token}`;
 
         if ( !token )  {
-            return res.redirect('/fb');  // пользователь не авторизирован в ФБ
+            return res.redirect('/fb');  // user is not authorized in FB
         }
 
         if (typeof options === 'string') {
